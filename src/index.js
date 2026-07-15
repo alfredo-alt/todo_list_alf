@@ -1,7 +1,7 @@
-// src/index.js
-import odinImage from "./odin.jpeg";
+import './styles.css'; // Webpack will compile CSS if you are bundling it
+import { DomController } from './dom.js';
 
-const image = document.createElement("img");
-image.src = odinImage;
-
-document.body.appendChild(image);
+// Initialize the entire application logic and DOM bindings on load
+document.addEventListener('DOMContentLoaded', () => {
+  new DomController();
+});
