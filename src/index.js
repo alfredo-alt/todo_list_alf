@@ -1,6 +1,3 @@
-import './styles.css';
-import { AppController } from './controller.js';
+import './styles/style.css';
 
-document.addEventListener('DOMContentLoaded', () => {
-  new AppController();
-});
+console.log('Todo app starting... (we will keep filling this in step by step)');
