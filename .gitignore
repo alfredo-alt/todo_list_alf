@@ -1,0 +1,27 @@
+# Entorno / Variables secretas (¡NUNCA SUBAS ESTO!)
+.env
+
+# Carpeta de producción generada por Webpack
+dist/
+
+# Dependencias de Node
+node_modules/
+jspm_packages/
+pnpm-lock.yaml
+
+# Archivos del sistema y logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.DS_Store
+Thumbs.db
+
+# Carpetas de editores que no se deben compartir
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
