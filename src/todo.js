@@ -1,19 +1,27 @@
+// Blueprint puro de un Todo. No sabe nada de DOM ni de localStorage.
 export class Todo {
-  constructor(title, description, dueDate, priority, notes = '', completed = false) {
+  constructor(
+    title,
+    description,
+    dueDate,
+    priority,
+    notes = '',
+    completed = false,
+    id = crypto.randomUUID() // <-- NUEVO: id estable, ya no dependemos del índice del array
+  ) {
+    this.id = id;
     this.title = title;
     this.description = description;
-    this.dueDate = dueDate; // Expects a date string (YYYY-MM-DD)
-    this.priority = priority; // 'low', 'medium', or 'high'
+    this.dueDate = dueDate; // string ISO 'YYYY-MM-DD'
+    this.priority = priority; // 'low' | 'medium' | 'high'
     this.notes = notes;
     this.completed = completed;
   }
 
-  // Toggles completion status of the todo
   toggleComplete() {
     this.completed = !this.completed;
   }
 
-  // Updates todo properties during edit
   update(title, description, dueDate, priority, notes) {
     this.title = title;
     this.description = description;

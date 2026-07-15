@@ -1,20 +1,17 @@
 import { Project } from './project.js';
 import { Todo } from './todo.js';
 
+// Única responsabilidad: hablar con localStorage. No sabe nada de DOM ni de renderizado.
 export class Storage {
-  // Saves the entire projects array to LocalStorage as a JSON string
   static saveProjects(projects) {
     localStorage.setItem('todoAppProjects', JSON.stringify(projects));
   }
 
-  // Retrieves projects and re-instantiates them back into proper classes
   static loadProjects() {
     const rawData = localStorage.getItem('todoAppProjects');
-    
-    // If no data exists, return a default state with a Default Project
+
     if (!rawData) {
       const defaultProject = new Project('Default Project');
-      // Add a sample todo to help the user get started
       defaultProject.addTodo(
         new Todo(
           'Welcome to your Todo App!',
@@ -29,19 +26,23 @@ export class Storage {
 
     const parsedData = JSON.parse(rawData);
 
-    // Map raw objects back to instances of Project and Todo classes
-    return parsedData.map(projData => {
-      const project = new Project(projData.name);
-      project.todos = projData.todos.map(todoData => {
-        return new Todo(
-          todoData.title,
-          todoData.description,
-          todoData.dueDate,
-          todoData.priority,
-          todoData.notes,
-          todoData.completed
-        );
-      });
+    // Reconstruimos instancias reales (no objetos planos) para que
+    // toggleComplete(), update(), etc. sigan existiendo después de JSON.parse.
+    // Preservamos el id guardado en vez de generar uno nuevo.
+    return parsedData.map((projData) => {
+      const project = new Project(projData.name, projData.id);
+      project.todos = projData.todos.map(
+        (todoData) =>
+          new Todo(
+            todoData.title,
+            todoData.description,
+            todoData.dueDate,
+            todoData.priority,
+            todoData.notes,
+            todoData.completed,
+            todoData.id
+          )
+      );
       return project;
     });
   }
