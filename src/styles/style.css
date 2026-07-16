@@ -184,3 +184,49 @@ body {
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
+
+.checklist-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.checklist-section__label {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.checklist__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.checklist__item-text--done {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.checklist-add {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.checklist-add input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.4rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
