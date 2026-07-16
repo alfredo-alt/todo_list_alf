@@ -8,6 +8,7 @@
 
 import './styles/style.css';
 import * as projectManager from './modules/projectManager.js';
+import * as Storage from './modules/Storage.js';
 import { toggleComplete, updateDetails } from './modules/todoOperations.js';
 import { render } from './modules/domController.js';
 import {
@@ -22,6 +23,7 @@ let selectedProjectId = null;
 
 function renderApp() {
   const projects = projectManager.getProjects();
+  Storage.save(projects); // persist on every state change, right before painting
   render(projects, selectedProjectId, callbacks);
 }
 
@@ -76,7 +78,8 @@ const callbacks = {
 };
 
 function init() {
-  const projects = projectManager.init(); // no saved data yet (point 8 comes later)
+  const savedProjects = Storage.load(); // null if nothing saved / data corrupted
+  const projects = projectManager.init(savedProjects);
   selectedProjectId = projects[0].id;
   renderApp();
 }
