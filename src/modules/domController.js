@@ -116,6 +116,7 @@ function renderTodoItem(projectId, todo, callbacks) {
   title.textContent = todo.title;
   title.className = 'todo-item__title';
   if (todo.completed) title.classList.add('todo-item__title--done');
+  title.addEventListener('click', () => callbacks.onOpenTodo(projectId, todo.id));
   item.appendChild(title);
 
   if (todo.dueDate) {

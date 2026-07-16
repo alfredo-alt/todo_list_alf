@@ -1,15 +1,20 @@
 // index.js
 // This is the "composition root" / orchestrator: the ONLY file that knows
-// about BOTH projectManager (business logic) AND domController (DOM).
-// Neither of those two modules knows about each other — index.js is what
-// wires them together via callback functions. This keeps assignment
-// point 4 satisfied: application logic and DOM code stay in separate,
-// independent modules.
+// about projectManager (business logic), domController (main layout) AND
+// modalController (forms/overlays). None of those modules know about each
+// other — index.js wires them together via callback functions. This keeps
+// assignment point 4 satisfied: application logic and DOM code stay in
+// separate, independent modules.
 
 import './styles/style.css';
 import * as projectManager from './modules/projectManager.js';
-import { toggleComplete } from './modules/todoOperations.js';
+import { toggleComplete, updateDetails } from './modules/todoOperations.js';
 import { render } from './modules/domController.js';
+import {
+  openAddProjectForm,
+  openAddTodoForm,
+  openTodoDetails,
+} from './modules/modalController.js';
 
 // UI-only state (which project is currently selected). This is NOT
 // business data, so it doesn't belong in projectManager.
@@ -27,21 +32,35 @@ const callbacks = {
   },
 
   onAddProject() {
-    // Simple prompt-based input for now.
-    // A proper form/modal will be built in assignment point 5.
-    const name = window.prompt('New project name:');
-    if (!name) return;
-    const project = projectManager.addProject(name);
-    selectedProjectId = project.id;
-    renderApp();
+    openAddProjectForm((name) => {
+      const project = projectManager.addProject(name);
+      selectedProjectId = project.id;
+      renderApp();
+    });
   },
 
   onAddTodo(projectId) {
     if (!projectId) return;
-    const title = window.prompt('Todo title:');
-    if (!title) return;
-    projectManager.addTodoToProject(projectId, { title });
-    renderApp();
+    openAddTodoForm((todoData) => {
+      projectManager.addTodoToProject(projectId, todoData);
+      renderApp();
+    });
+  },
+
+  onOpenTodo(projectId, todoId) {
+    const { todo } = projectManager.findTodoById(todoId);
+
+    openTodoDetails(
+      todo,
+      (changes) => {
+        updateDetails(todo, changes);
+        renderApp();
+      },
+      () => {
+        projectManager.deleteTodoFromProject(projectId, todoId);
+        renderApp();
+      }
+    );
   },
 
   onToggleComplete(projectId, todoId) {

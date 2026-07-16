@@ -90,6 +90,11 @@ body {
 
 .todo-item__title {
   flex: 1;
+  cursor: pointer;
+}
+
+.todo-item__title:hover {
+  text-decoration: underline;
 }
 
 .todo-item__title--done {
@@ -124,4 +129,58 @@ body {
 .btn--danger {
   background: #fee2e2;
   color: #b91c1c;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  width: 360px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.modal-form h2 {
+  margin: 0 0 0.25rem 0;
+}
+
+.modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.modal-form input,
+.modal-form textarea,
+.modal-form select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.modal-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
