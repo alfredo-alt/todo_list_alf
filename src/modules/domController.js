@@ -9,6 +9,13 @@
 // not on the concrete projectManager module. That means we could swap
 // projectManager for a totally different state module and domController
 // would never need to change.
+//
+// date-fns is used here (not in Todo.js/projectManager.js) because date
+// FORMATTING is a presentation concern, not business logic. The todo's
+// dueDate is stored as a plain ISO string ('2026-07-20'); this module is
+// the one responsible for turning that into something human-readable.
+
+import { format, isPast, isToday, parseISO } from 'date-fns';
 
 const appRoot = document.getElementById('app');
 
@@ -121,8 +128,14 @@ function renderTodoItem(projectId, todo, callbacks) {
 
   if (todo.dueDate) {
     const date = document.createElement('span');
-    date.textContent = todo.dueDate;
+    date.textContent = formatDueDate(todo.dueDate);
     date.className = 'todo-item__date';
+
+    // Mark overdue todos (but don't nag about ones already completed).
+    if (!todo.completed && isPast(parseISO(todo.dueDate)) && !isToday(parseISO(todo.dueDate))) {
+      date.classList.add('todo-item__date--overdue');
+    }
+
     item.appendChild(date);
   }
 
@@ -133,6 +146,14 @@ function renderTodoItem(projectId, todo, callbacks) {
   item.appendChild(deleteBtn);
 
   return item;
+}
+
+// Turns '2026-07-20' into something like 'Jul 20, 2026'.
+// 'Today' is shown instead of the full date when it matches the current day.
+function formatDueDate(isoDateString) {
+  const date = parseISO(isoDateString);
+  if (isToday(date)) return 'Today';
+  return format(date, 'MMM d, yyyy');
 }
 
 export { render };

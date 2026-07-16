@@ -107,6 +107,11 @@ body {
   color: #6b7280;
 }
 
+.todo-item__date--overdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+
 .btn {
   border: none;
   border-radius: 6px;
