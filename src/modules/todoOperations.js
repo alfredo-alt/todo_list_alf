@@ -5,7 +5,7 @@
 // we completely avoid the "revive methods" problem when reading from
 // localStorage: there are no methods to lose, only data.
 
-import { PRIORITIES } from './Todo';
+import { PRIORITIES } from './Todo.js';
 
 function toggleComplete(todo) {
   todo.completed = !todo.completed;

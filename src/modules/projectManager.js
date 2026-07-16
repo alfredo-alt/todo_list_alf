@@ -5,8 +5,8 @@
 // directly either: it always goes through the functions here (this is
 // what assignment point 4 requires: separating logic from the DOM).
 
-import { createProject } from './Project';
-import { createTodo } from './Todo';
+import { createProject } from './Project.js';
+import { createTodo } from './Todo.js';
 
 const DEFAULT_PROJECT_NAME = 'Default';
 
