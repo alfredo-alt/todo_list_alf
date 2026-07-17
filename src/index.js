@@ -9,7 +9,7 @@
 import './styles/style.css';
 import * as projectManager from './modules/projectManager.js';
 import * as Storage from './modules/Storage.js';
-import { toggleComplete, updateDetails } from './modules/todoOperations.js';
+import { toggleComplete, updateDetails, toggleChecklistItem } from './modules/todoOperations.js';
 import { render } from './modules/domController.js';
 import {
   openAddProjectForm,
@@ -69,6 +69,12 @@ const callbacks = {
     const { todo } = projectManager.findTodoById(todoId);
     toggleComplete(todo); // business logic lives in todoOperations, not here
     renderApp();
+  },
+
+  onToggleChecklistItem(projectId, todoId, itemId) {
+    const { todo } = projectManager.findTodoById(todoId);
+    toggleChecklistItem(todo, itemId);
+    renderApp(); // goes through renderApp so it also gets saved to Storage
   },
 
   onDeleteTodo(projectId, todoId) {

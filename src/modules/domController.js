@@ -109,22 +109,43 @@ function renderTodoList(project, callbacks) {
   return list;
 }
 
+// Content longer than this gets truncated inline, with a "See more" link
+// that opens the full todo details modal instead.
+const DESCRIPTION_PREVIEW_LIMIT = 140;
+// Checklist items beyond this count are hidden behind "+N more" (opens modal).
+const CHECKLIST_PREVIEW_LIMIT = 4;
+
 function renderTodoItem(projectId, todo, callbacks) {
   const item = document.createElement('li');
   item.className = `todo-item priority-${todo.priority}`;
+
+  item.appendChild(renderTodoRow(projectId, todo, callbacks));
+
+  const details = renderTodoDetailsPreview(projectId, todo, callbacks);
+  if (details) item.appendChild(details);
+
+  return item;
+}
+
+// The main row: checkbox, title, due date, delete button.
+// This is unchanged from before — it's just been split into its own
+// function so renderTodoItem can also attach the inline preview below it.
+function renderTodoRow(projectId, todo, callbacks) {
+  const row = document.createElement('div');
+  row.className = 'todo-item__row';
 
   const checkbox = document.createElement('input');
   checkbox.type = 'checkbox';
   checkbox.checked = todo.completed;
   checkbox.addEventListener('change', () => callbacks.onToggleComplete(projectId, todo.id));
-  item.appendChild(checkbox);
+  row.appendChild(checkbox);
 
   const title = document.createElement('span');
   title.textContent = todo.title;
   title.className = 'todo-item__title';
   if (todo.completed) title.classList.add('todo-item__title--done');
   title.addEventListener('click', () => callbacks.onOpenTodo(projectId, todo.id));
-  item.appendChild(title);
+  row.appendChild(title);
 
   if (todo.dueDate) {
     const date = document.createElement('span');
@@ -136,16 +157,108 @@ function renderTodoItem(projectId, todo, callbacks) {
       date.classList.add('todo-item__date--overdue');
     }
 
-    item.appendChild(date);
+    row.appendChild(date);
   }
 
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Delete';
   deleteBtn.className = 'btn btn--danger';
   deleteBtn.addEventListener('click', () => callbacks.onDeleteTodo(projectId, todo.id));
-  item.appendChild(deleteBtn);
+  row.appendChild(deleteBtn);
 
-  return item;
+  return row;
+}
+
+// Shows description + checklist directly under the todo, without needing
+// a click. Only truncates/hides content when it's actually long, and in
+// that case offers a "See more" / "+N more" link that opens the full
+// details modal (callbacks.onOpenTodo), rather than hiding everything
+// behind a click by default.
+function renderTodoDetailsPreview(projectId, todo, callbacks) {
+  const hasDescription = todo.description && todo.description.trim().length > 0;
+  const hasChecklist = todo.checklist && todo.checklist.length > 0;
+
+  if (!hasDescription && !hasChecklist) return null;
+
+  const wrapper = document.createElement('div');
+  wrapper.className = 'todo-item__details';
+
+  if (hasDescription) {
+    wrapper.appendChild(renderDescriptionPreview(projectId, todo, callbacks));
+  }
+
+  if (hasChecklist) {
+    wrapper.appendChild(renderChecklistPreview(projectId, todo, callbacks));
+  }
+
+  return wrapper;
+}
+
+function renderDescriptionPreview(projectId, todo, callbacks) {
+  const p = document.createElement('p');
+  p.className = 'todo-item__description';
+
+  const isLong = todo.description.length > DESCRIPTION_PREVIEW_LIMIT;
+  const text = isLong
+    ? `${todo.description.slice(0, DESCRIPTION_PREVIEW_LIMIT).trim()}… `
+    : `${todo.description} `;
+
+  p.appendChild(document.createTextNode(text));
+
+  if (isLong) {
+    const seeMore = document.createElement('button');
+    seeMore.type = 'button';
+    seeMore.textContent = 'See more';
+    seeMore.className = 'link-btn';
+    seeMore.addEventListener('click', () => callbacks.onOpenTodo(projectId, todo.id));
+    p.appendChild(seeMore);
+  }
+
+  return p;
+}
+
+function renderChecklistPreview(projectId, todo, callbacks) {
+  const container = document.createElement('div');
+  container.className = 'todo-item__checklist-preview';
+
+  const visibleItems = todo.checklist.slice(0, CHECKLIST_PREVIEW_LIMIT);
+  const hiddenCount = todo.checklist.length - visibleItems.length;
+
+  const list = document.createElement('ul');
+  list.className = 'checklist-preview';
+
+  visibleItems.forEach((checklistItem) => {
+    const li = document.createElement('li');
+    li.className = 'checklist-preview__item';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = checklistItem.done;
+    checkbox.addEventListener('change', () =>
+      callbacks.onToggleChecklistItem(projectId, todo.id, checklistItem.id)
+    );
+    li.appendChild(checkbox);
+
+    const text = document.createElement('span');
+    text.textContent = checklistItem.text;
+    if (checklistItem.done) text.classList.add('checklist-preview__text--done');
+    li.appendChild(text);
+
+    list.appendChild(li);
+  });
+
+  container.appendChild(list);
+
+  if (hiddenCount > 0) {
+    const moreBtn = document.createElement('button');
+    moreBtn.type = 'button';
+    moreBtn.textContent = `+${hiddenCount} more`;
+    moreBtn.className = 'link-btn';
+    moreBtn.addEventListener('click', () => callbacks.onOpenTodo(projectId, todo.id));
+    container.appendChild(moreBtn);
+  }
+
+  return container;
 }
 
 // Turns '2026-07-20' into something like 'Jul 20, 2026'.
